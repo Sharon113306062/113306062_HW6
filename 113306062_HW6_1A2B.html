@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>1A2B Game</title>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        .game-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .input-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 250px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+	 <h1>113306062_HW6_1A2B</h1>
+
+    <div class="game-container">
+        <div class="input-container">
+            <input type="text" id="guessInput" maxlength="4" placeholder="請輸入四個不重複的數字">
+            <button onclick="checkGuess()">猜!</button>
+        </div>
+
+        <div class="results">
+            <h2>遊戲紀錄：</h2>
+            <div id="guessResults"></div>
+            <div id="attempts" style="display: none;">第 <span id="attemptsNumber">0</span> 次</div>
+        </div>
+    </div>
+    <script>
+        // 隨機生成四位數字，保證數字不重複
+        function generateRandomNumber() {
+            let digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            let randomNum = [];
+            for (let i = 0; i < 4; i++) {
+                let randomIndex = Math.floor(Math.random() * digits.length);
+                randomNum.push(digits[randomIndex]);
+                digits.splice(randomIndex, 1); // 移除已選擇的數字，避免重複
+            }
+            return randomNum;
+        }
+
+        // 遊戲初始化
+        let secretNumber = generateRandomNumber();
+        let attempts = 0;
+
+        // 檢查玩家輸入的猜測
+        function checkGuess() {
+            let guessInput = document.getElementById('guessInput').value;
+            let resultsDiv = document.getElementById('guessResults');
+            let attemptsSpan = document.getElementById('attempts');
+
+            // 檢查是否為四位數字
+            if (guessInput.length !== 4 || isNaN(guessInput)) {
+                alert('請輸入四位數字!');
+                return;
+            }
+
+            // 檢查數字是否有重複
+            let guessArr = guessInput.split('');
+            let uniqueDigits = [...new Set(guessArr)];
+            if (guessArr.length !== uniqueDigits.length) {
+                alert('請輸入不重複的數字!');
+                return;
+            }
+
+            // 檢查是否猜對
+            let A = 0;
+            let B = 0;
+            for (let i = 0; i < 4; i++) {
+                if (parseInt(guessArr[i]) === secretNumber[i]) {
+                    A++;
+                } else if (secretNumber.includes(parseInt(guessArr[i]))) {
+                    B++;
+                }
+            }
+
+            // 顯示猜測結果
+            let resultText = `${A}A${B}B`
+            let attemptText = `第 ${attempts + 1} 次：${guessInput} → ${resultText}`;
+            let resultItem = document.createElement('div');
+            resultItem.classList.add('result-item');
+            resultItem.textContent = attemptText;
+            resultsDiv.appendChild(resultItem);
+            
+
+            // 統計作答次數
+            attempts++;
+            attemptsSpan.textContent = attempts;
+
+            if (attempts === 1) {
+                attemptsSpan.style.display = 'block';
+            }
+
+            // 檢查是否猜對
+			if (A === 4) {
+    		// 顯示最後一次的猜測結果（猜對的情況）
+    		let attemptText = `第 ${attempts} 次：${guessInput} → 4A0B`;
+    		let resultItem = document.createElement('div');
+    		resultItem.classList.add('result-item');
+    		resultItem.textContent = attemptText;
+            resultItemesultsDiv.appendChild(resultItem);
+    	
+
+    		// 重置遊戲
+    		secretNumber = generateRandomNumber();
+    		attempts = 0;
+    		attemptsSpan.textContent = attempts;
+    		resultsDiv.innerHTML = ''; 
+    		attemptsSpan.style.display = 'none';
+			}
+
+            // 清空輸入框
+            document.getElementById('guessInput').value = '';
+        }
+    </script>
+
+</body>
+</html>
